@@ -32,7 +32,9 @@ end
 $db.commit
 
 cmd.parameters.each {|pattern|
-  matches = $dictionary.words.select {|word| word.match(pattern) }
-  puts "Pattern: #{pattern}\tMatches: #{matches}"
+  full_letters = letters + pattern.scan(/\w/).join('')
+  matches = $dictionary.words.select {|word| word.match(pattern) && word.delete(full_letters).length == 0 }
+  puts "#{pattern}: #{matches}"
+  puts "-" * 80
 }
 

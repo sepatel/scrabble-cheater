@@ -9,6 +9,7 @@ cmd = CommandLine.new do
   parameter 'letters', 'the letters you have'
   parameter 'patterns', 'one or more patterns in regex format'
   option 'o', 'online', GetoptLong::NO_ARGUMENT, 'retrieve additional words from the internet'
+  example '-o bableso "^..g.*" "^.x..?$"'
 end
 
 class Dictionary < DataObject
@@ -34,7 +35,8 @@ $db.commit
 cmd.parameters.each {|pattern|
   full_letters = letters + pattern.scan(/\w/).join('')
   matches = $dictionary.words.select {|word| word.match(pattern) && word.delete(full_letters).length == 0 }
-  puts "#{pattern}: #{matches}"
+  matches = matches.to_set.to_a
+  puts "#{pattern}: #{matches.sort_by do |m| [m.length, m] end}"
   puts "-" * 80
 }
 
